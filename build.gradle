@@ -1,0 +1,97 @@
+// Default Forge build script settings
+buildscript {
+    repositories {
+        maven {
+            url = 'https://files.minecraftforge.net/maven'
+        }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle"
+apply plugin: "eclipse"
+apply plugin: "idea"
+
+// Define Maven information
+version = archiveVersion
+group = modGroup
+archivesBaseName = modId
+
+// Define Java information
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = javaVersion
+
+// Configure Minecraft environment
+minecraft {
+    // Minecraft Port Central definitions
+    mappings channel: mcpMappingChannel, version: mcpMappingVersion
+
+    // Run configurations
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a development environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            // Only configure this mod
+            mods {
+                main {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+// Configure project dependencies
+dependencies {
+    // Depend on Minecraft Forge
+    minecraft "net.minecraftforge:forge:" + mcVersion + "-" + forgeVersion
+}
+
+// Configure JAR file manifest
+jar {
+    manifest {
+        attributes([
+            "Specification-Title": modId,
+            "Specification-Vendor": modGroup,
+            "Specification-Version": "1.0",
+            "Implementation-Title": modName,
+            "Implementation-Version": modVersion,
+            "Implementation-Vendor": modGroup,
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")/*,
+            "Signing-Fingerprint"     : project.hasProperty('signSHA1') ? project.findProperty('signSHA1') : "unsigned"*/
+        ])
+    }
+}
+
+// Process resources on build
+processResources {
+    // This will ensure that this task is redone when the versions change.
+    inputs.property "modVersion", modVersion
+    inputs.property "modName", modName
+    inputs.property "modId", modId
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+        expand "modVersion": modVersion
+        expand "modName": modName
+        expand "modId": modId
+    }
+
+    from(sourceSets.main.java.srcDirs) {
+        include "me/holosym/mc/cheeky/Cheeky.java"
+        expand "modId": modId
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "META-INF/mods.toml"
+    }
+}

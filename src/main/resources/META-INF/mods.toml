@@ -1,0 +1,9 @@
+modLoader="javafml" #mandatory
+loaderVersion="[28.1]" #mandatory
+
+[[mods]] #mandatory
+modId="${modId}" #mandatory
+version="${modVersion}" #mandatory
+displayName="${modName}" #mandatory
+description="Silly test mod for Minecraft Forge." #mandatory
+authors="Holosym" #optional
