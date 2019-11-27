@@ -3,7 +3,8 @@ loaderVersion="[28.1]" #mandatory
 
 [[mods]] #mandatory
 modId="${modId}" #mandatory
-version="${modVersion}" #mandatory
+version="${version}" #mandatory
 displayName="${modName}" #mandatory
+
 description="Silly test mod for Minecraft Forge." #mandatory
 authors="Holosym" #optional

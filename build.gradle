@@ -12,17 +12,25 @@ buildscript {
     }
 }
 
+
+
+// Apply required plugins
 apply plugin: "net.minecraftforge.gradle"
+apply plugin: "java"
 apply plugin: "eclipse"
 apply plugin: "idea"
 
+
+
 // Define Maven information
-version = archiveVersion
+version = mcVersion + "-" + modVersion
 group = modGroup
 archivesBaseName = modId
 
 // Define Java information
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = javaVersion
+
+
 
 // Configure Minecraft environment
 minecraft {
@@ -50,21 +58,26 @@ minecraft {
     }
 }
 
+
+
 // Configure project dependencies
 dependencies {
     // Depend on Minecraft Forge
     minecraft "net.minecraftforge:forge:" + mcVersion + "-" + forgeVersion
 }
 
+
+
 // Configure JAR file manifest
 jar {
+    baseName = modId + "-" + project.version
     manifest {
         attributes([
             "Specification-Title": modId,
             "Specification-Vendor": modGroup,
             "Specification-Version": "1.0",
             "Implementation-Title": modName,
-            "Implementation-Version": modVersion,
+            "Implementation-Version": project.version,
             "Implementation-Vendor": modGroup,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")/*,
             "Signing-Fingerprint"     : project.hasProperty('signSHA1') ? project.findProperty('signSHA1') : "unsigned"*/
@@ -72,25 +85,22 @@ jar {
     }
 }
 
-// Process resources on build
+
+
+// Process resources on build to update properties in other files
 processResources {
-    // This will ensure that this task is redone when the versions change.
-    inputs.property "modVersion", modVersion
-    inputs.property "modName", modName
+    // Redo task when any of these properties change
+    inputs.property "version", project.version
     inputs.property "modId", modId
+    inputs.property "modName", modName
 
+    // Process needed resource files
     from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-        expand "modVersion": modVersion
-        expand "modName": modName
-        expand "modId": modId
+        include "META-INF/mods.toml"
+        expand project.properties
     }
 
-    from(sourceSets.main.java.srcDirs) {
-        include "me/holosym/mc/cheeky/Cheeky.java"
-        expand "modId": modId
-    }
-
+    // Copy everything except needed resource files (since it was already done above)
     from(sourceSets.main.resources.srcDirs) {
         exclude "META-INF/mods.toml"
     }
